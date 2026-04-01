@@ -1,4 +1,4 @@
-import { generatePointsData } from "../mock/point";
+import { generatePointsData } from '../mock/point';
 
 export default class PointsModel {
   #points = [];

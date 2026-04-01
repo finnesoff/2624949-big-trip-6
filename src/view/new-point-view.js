@@ -1,4 +1,4 @@
-import View from './view';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createNewPointTemplate() {
   return `
@@ -47,7 +47,7 @@ function createNewPointTemplate() {
   `;
 }
 
-export default class NewPointView extends View {
+export default class NewPointView extends AbstractView {
   get template() {
     return createNewPointTemplate();
   }

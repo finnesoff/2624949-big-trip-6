@@ -1,57 +1,57 @@
-import { EVENT_TYPES } from "../const";
+import { EVENT_TYPES } from '../const';
 
-const CITY_NAMES = ["Amsterdam", "Geneva", "Chamonix", "Paris", "Rome"];
+const CITY_NAMES = ['Amsterdam', 'Geneva', 'Chamonix', 'Paris', 'Rome'];
 const LOREM_SENTENCES = [
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  "Cras aliquet varius magna, non porta ligula feugiat eget.",
-  "Fusce tristique felis at fermentum pharetra.",
-  "Aliquam id orci ut lectus varius viverra.",
-  "Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.",
-  "Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.",
-  "Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.",
-  "Sed sed nisi sed augue convallis suscipit in sed felis.",
-  "Aliquam erat volutpat.",
-  "Nunc fermentum tortor ac porta dapibus.",
-  "In rutrum ac purus sit amet tempus.",
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  'Cras aliquet varius magna, non porta ligula feugiat eget.',
+  'Fusce tristique felis at fermentum pharetra.',
+  'Aliquam id orci ut lectus varius viverra.',
+  'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
+  'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.',
+  'Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.',
+  'Sed sed nisi sed augue convallis suscipit in sed felis.',
+  'Aliquam erat volutpat.',
+  'Nunc fermentum tortor ac porta dapibus.',
+  'In rutrum ac purus sit amet tempus.',
 ];
 
 const OFFER_TEMPLATES_BY_TYPE = {
   taxi: [
-    { title: "Order Uber", price: 20 },
-    { title: "Upgrade to a business class", price: 70 },
+    { title: 'Order Uber', price: 20 },
+    { title: 'Upgrade to a business class', price: 70 },
   ],
   bus: [
-    { title: "Infotainment system", price: 5 },
-    { title: "Order meal", price: 15 },
+    { title: 'Infotainment system', price: 5 },
+    { title: 'Order meal', price: 15 },
   ],
   train: [
-    { title: "Book a taxi at destination", price: 20 },
-    { title: "Travel by first class", price: 40 },
+    { title: 'Book a taxi at destination', price: 20 },
+    { title: 'Travel by first class', price: 40 },
   ],
   ship: [
-    { title: "Choose seats", price: 10 },
-    { title: "Order meal", price: 20 },
+    { title: 'Choose seats', price: 10 },
+    { title: 'Order meal', price: 20 },
   ],
   drive: [
-    { title: "Rent a car", price: 200 },
-    { title: "Add full insurance", price: 80 },
+    { title: 'Rent a car', price: 200 },
+    { title: 'Add full insurance', price: 80 },
   ],
   flight: [
-    { title: "Add luggage", price: 30 },
-    { title: "Switch to comfort class", price: 100 },
-    { title: "Add meal", price: 15 },
+    { title: 'Add luggage', price: 30 },
+    { title: 'Switch to comfort class', price: 100 },
+    { title: 'Add meal', price: 15 },
   ],
-  "check-in": [
-    { title: "Add breakfast", price: 50 },
-    { title: "Late checkout", price: 30 },
+  'check-in': [
+    { title: 'Add breakfast', price: 50 },
+    { title: 'Late checkout', price: 30 },
   ],
   sightseeing: [
-    { title: "Book tickets", price: 40 },
-    { title: "Lunch in city", price: 30 },
+    { title: 'Book tickets', price: 40 },
+    { title: 'Lunch in city', price: 30 },
   ],
   restaurant: [
-    { title: "Choose table", price: 15 },
-    { title: "Order transfer", price: 20 },
+    { title: 'Choose table', price: 15 },
+    { title: 'Order transfer', price: 20 },
   ],
 };
 
@@ -77,7 +77,7 @@ const getRandomItems = (items, count) => {
 };
 
 const createDescription = () =>
-  getRandomItems(LOREM_SENTENCES, getRandomInteger(1, 5)).join(" ");
+  getRandomItems(LOREM_SENTENCES, getRandomInteger(1, 5)).join(' ');
 
 const createDestination = (index, cityName) => ({
   id: `destination-${index + 1}`,
