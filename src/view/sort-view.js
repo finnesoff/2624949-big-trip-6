@@ -1,4 +1,4 @@
-import View from './view';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createSortTemplate() {
   return (
@@ -27,7 +27,7 @@ function createSortTemplate() {
   );
 }
 
-export default class SortView extends View {
+export default class SortView extends AbstractView {
   get template() {
     return createSortTemplate();
   }
