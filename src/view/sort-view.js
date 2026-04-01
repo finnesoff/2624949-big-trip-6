@@ -1,29 +1,39 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFER: 'offer'
+};
+
+function createSortItemTemplate(sortType, isChecked, isDisabled) {
+  return (
+    `<div class="trip-sort__item  trip-sort__item--${sortType}">
+      <input
+        id="sort-${sortType}"
+        class="trip-sort__input  visually-hidden"
+        type="radio"
+        name="trip-sort"
+        value="sort-${sortType}"
+        ${isChecked ? 'checked' : ''}
+        ${isDisabled ? 'disabled' : ''}
+      >
+      <label class="trip-sort__btn" for="sort-${sortType}">${sortType}</label>
+    </div>`
+  );
+}
+
 function createSortTemplate() {
   return (
-    '<form class="trip-events__trip-sort trip-sort" action="#" method="get">' +
-    '<div class="trip-sort__item trip-sort__item--day">' +
-    '<input id="sort-day" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-day" checked>' +
-    '<label class="trip-sort__btn" for="sort-day">Day</label>' +
-    '</div>' +
-    '<div class="trip-sort__item trip-sort__item--event">' +
-    '<input id="sort-event" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-event" disabled>' +
-    '<label class="trip-sort__btn" for="sort-event">Event</label>' +
-    '</div>' +
-    '<div class="trip-sort__item trip-sort__item--time">' +
-    '<input id="sort-time" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-time">' +
-    '<label class="trip-sort__btn" for="sort-time">Time</label>' +
-    '</div>' +
-    '<div class="trip-sort__item trip-sort__item--price">' +
-    '<input id="sort-price" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-price">' +
-    '<label class="trip-sort__btn" for="sort-price">Price</label>' +
-    '</div>' +
-    '<div class="trip-sort__item trip-sort__item--offer">' +
-    '<input id="sort-offer" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-offer" disabled>' +
-    '<label class="trip-sort__btn" for="sort-offer">Offers</label>' +
-    '</div>' +
-    '</form>'
+    `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
+      ${createSortItemTemplate(SortType.DAY, true, false)}
+      ${createSortItemTemplate(SortType.EVENT, false, true)}
+      ${createSortItemTemplate(SortType.TIME, false, false)}
+      ${createSortItemTemplate(SortType.PRICE, false, false)}
+      ${createSortItemTemplate(SortType.OFFER, false, true)}
+    </form>`
   );
 }
 

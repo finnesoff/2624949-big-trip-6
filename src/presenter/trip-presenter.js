@@ -4,6 +4,8 @@ import SortView from '../view/sort-view.js';
 import ListView from '../view/list-view.js';
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
+import ListEmptyView from '../view/list-empty-view.js';
+import { generateFilter } from '../mock/filter.js';
 
 export default class TripPresenter {
   #filtersContainer = null;
@@ -11,8 +13,8 @@ export default class TripPresenter {
   #pointsModel = null;
 
   #listComponent = new ListView();
-  #filtersComponent = new FiltersView();
   #sortComponent = new SortView();
+  #listEmptyComponent = new ListEmptyView();
 
   constructor({ filtersContainer, tripEventsContainer, pointsModel }) {
     this.#filtersContainer = filtersContainer;
@@ -29,7 +31,16 @@ export default class TripPresenter {
     );
     const offersById = new Map(offers.map((offer) => [offer.id, offer]));
 
-    render(this.#filtersComponent, this.#filtersContainer);
+    const filters = generateFilter(points);
+    const filtersComponent = new FiltersView({ filters });
+
+    render(filtersComponent, this.#filtersContainer);
+
+    if (points.length === 0) {
+      render(this.#listEmptyComponent, this.#tripEventsContainer);
+      return;
+    }
+
     render(this.#sortComponent, this.#tripEventsContainer);
     render(this.#listComponent, this.#tripEventsContainer);
 
