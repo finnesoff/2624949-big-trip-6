@@ -225,6 +225,25 @@ export default class EditPointView extends AbstractStatefulView {
     this._restoreHandlers();
   }
 
+  get template() {
+    const destination = this.#destinationsById.get(this._state.currentDestinationId);
+    const pointType = this._state.currentType;
+    const availableOffers = this.#offers.filter(
+      (offer) => offer.type === pointType,
+    );
+
+    return createEditPointTemplate({
+      point: this._state.point,
+      destination,
+      destinations: this.#destinations,
+      availableOffers,
+      isCreating: this.#isCreating,
+      isDisabled: this._state.isDisabled,
+      isSaving: this._state.isSaving,
+      isDeleting: this._state.isDeleting,
+    });
+  }
+
   removeElement() {
     super.removeElement();
 
@@ -411,24 +430,5 @@ export default class EditPointView extends AbstractStatefulView {
       this.element.querySelector('.event__rollup-btn')?.addEventListener('click', this.#closeClickHandler);
     }
     this.#setDatepickers();
-  }
-
-  get template() {
-    const destination = this.#destinationsById.get(this._state.currentDestinationId);
-    const pointType = this._state.currentType;
-    const availableOffers = this.#offers.filter(
-      (offer) => offer.type === pointType,
-    );
-
-    return createEditPointTemplate({
-      point: this._state.point,
-      destination,
-      destinations: this.#destinations,
-      availableOffers,
-      isCreating: this.#isCreating,
-      isDisabled: this._state.isDisabled,
-      isSaving: this._state.isSaving,
-      isDeleting: this._state.isDeleting,
-    });
   }
 }

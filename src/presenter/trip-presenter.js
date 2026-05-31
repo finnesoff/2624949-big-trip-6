@@ -4,27 +4,16 @@ import SortView, { SortType } from '../view/sort-view.js';
 import ListView from '../view/list-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import PointPresenter from './point-presenter.js';
+import NewPointPresenter from './new-point-presenter.js';
+import TripInfoView from '../view/trip-info-view.js';
+import { filter } from '../utils/filter.js';
+import { sortPointDay, sortPointTime, sortPointPrice } from '../utils/sort.js';
+import { SortType, UpdateType, UserAction } from '../const.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
-const DEFAULT_SORT_TYPE = SortType.DAY;
-
-function sortPointsByDay(pointA, pointB) {
-  return new Date(pointA.dateFrom) - new Date(pointB.dateFrom);
-}
-
-function sortPointsByTime(pointA, pointB) {
-  const durationA = new Date(pointA.dateTo) - new Date(pointA.dateFrom);
-  const durationB = new Date(pointB.dateTo) - new Date(pointB.dateFrom);
-  return durationB - durationA;
-}
-
-function sortPointsByPrice(pointA, pointB) {
-  return pointB.basePrice - pointA.basePrice;
-}
-
-const SortFunctionMap = {
-  [SortType.DAY]: sortPointsByDay,
-  [SortType.TIME]: sortPointsByTime,
-  [SortType.PRICE]: sortPointsByPrice,
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
 };
 
 export default class TripPresenter {
@@ -64,16 +53,18 @@ export default class TripPresenter {
     const points = this.#pointsModel.points;
     const filteredPoints = filter[filterType](points);
 
+    const pointsCopy = Array.isArray(filteredPoints) ? [...filteredPoints] : [];
+
     switch (this.#currentSortType) {
       case SortType.DAY:
-        return filteredPoints.sort(sortPointDay);
+        return pointsCopy.sort(sortPointDay);
       case SortType.TIME:
-        return filteredPoints.sort(sortPointTime);
+        return pointsCopy.sort(sortPointTime);
       case SortType.PRICE:
-        return filteredPoints.sort(sortPointPrice);
+        return pointsCopy.sort(sortPointPrice);
     }
 
-    return filteredPoints;
+    return pointsCopy;
   }
 
   get destinations() {
@@ -85,13 +76,24 @@ export default class TripPresenter {
   }
 
   init() {
-    const points = this.#pointsModel.points;
-    this.#destinations = this.#pointsModel.destinations;
-    this.#offers = this.#pointsModel.offers;
-    this.#destinationsById = new Map(
-      this.#destinations.map((destination) => [destination.id, destination]),
-    );
-    this.#offersById = new Map(this.#offers.map((offer) => [offer.id, offer]));
+    this.#renderBoard();
+  }
+
+  createPoint() {
+    const points = this.points;
+    if (points.length === 0) {
+      if (this.#listEmptyComponent) {
+        remove(this.#listEmptyComponent);
+        this.#listEmptyComponent = null;
+      }
+      if (!this.#isError) {
+        this.#renderSort();
+      }
+      render(this.#listComponent, this.#tripEventsContainer);
+    }
+
+    this.#newPointPresenter.init(this.destinations, new Map(this.destinations.map((d) => [d.id, d])), this.offers);
+  }
 
     const filtersComponent = new FiltersView();
 
@@ -151,9 +153,20 @@ export default class TripPresenter {
       return;
     }
 
-    this.#pointsModel.points[pointIndex] = updatedPoint;
-    this.#pointPresenters.get(updatedPoint.id)?.updatePoint(updatedPoint);
-  };
+    this.#tripInfoComponent = new TripInfoView({
+      points: this.#pointsModel.points,
+      destinations: this.destinations,
+      offers: this.offers
+    });
+    render(this.#tripInfoComponent, this.#headerContainer, RenderPosition.AFTERBEGIN);
+  }
+
+  #clearTripInfo() {
+    if (this.#tripInfoComponent) {
+      remove(this.#tripInfoComponent);
+      this.#tripInfoComponent = null;
+    }
+  }
 
   #handlePointModeChange = (activePointPresenter) => {
     this.#pointPresenters.forEach((pointPresenter) => {

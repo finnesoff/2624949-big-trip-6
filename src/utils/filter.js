@@ -6,7 +6,7 @@ export const FilterType = {
 };
 
 export const filter = {
-  [FilterType.EVERYTHING]: (points) => points,
+  [FilterType.EVERYTHING]: (points) => Array.isArray(points) ? [...points] : [],
   [FilterType.FUTURE]: (points) =>
     points.filter((point) => new Date(point.dateFrom) > new Date()),
   [FilterType.PRESENT]: (points) =>

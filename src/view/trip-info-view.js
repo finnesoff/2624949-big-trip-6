@@ -2,7 +2,10 @@ import AbstractView from '../framework/view/abstract-view.js';
 import dayjs from 'dayjs';
 import { escapeHTML } from '../utils/common.js';
 
-const formatDateShort = (date) => dayjs(date).format('D MMM').toUpperCase();
+const MAX_ROUTE_NAMES = 3;
+const DATE_FORMAT_SHORT = 'D MMM';
+
+const formatDateShort = (date) => dayjs(date).format(DATE_FORMAT_SHORT).toUpperCase();
 
 const createTitle = (points, destinationsById) => {
   if (!points || points.length === 0) {
@@ -18,7 +21,7 @@ const createTitle = (points, destinationsById) => {
     return '';
   }
 
-  if (safeNames.length <= 3) {
+  if (safeNames.length <= MAX_ROUTE_NAMES) {
     return safeNames.join(' &mdash; ');
   }
 
@@ -88,14 +91,14 @@ export default class TripInfoView extends AbstractView {
     this.#offers = offers;
   }
 
+  get template() {
+    return createTemplate(this.#points, this.#destinations, this.#offers);
+  }
+
   update({ points, destinations, offers }) {
     this.#points = points ?? this.#points;
     this.#destinations = destinations ?? this.#destinations;
     this.#offers = offers ?? this.#offers;
     this.removeElement();
-  }
-
-  get template() {
-    return createTemplate(this.#points, this.#destinations, this.#offers);
   }
 }

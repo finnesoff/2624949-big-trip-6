@@ -150,49 +150,21 @@ export default class NewPointView extends AbstractStatefulView {
     this.#handleCloseClick = onCloseClick;
 
     this._setState({
+      point: {
+        id: null,
+        type: EVENT_TYPES[0],
+        destinationId: this.#destinations[0]?.id ?? null,
+        dateFrom: new Date().toISOString(),
+        dateTo: new Date().toISOString(),
+        basePrice: 0,
+        offerIds: [],
+        isFavorite: false,
+      },
       currentType: EVENT_TYPES[0],
       currentDestinationId: this.#destinations[0]?.id ?? null,
     });
 
     this._restoreHandlers();
-  }
-
-  #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleFormSubmit();
-  };
-
-  #typeChangeHandler = (evt) => {
-    evt.preventDefault();
-    this.updateElement({
-      currentType: evt.target.value,
-    });
-  };
-
-  #destinationChangeHandler = (evt) => {
-    evt.preventDefault();
-    const selectedDestinationName = evt.target.value;
-    const selectedDestination = this.#destinations.find(
-      (dest) => dest.name === selectedDestinationName,
-    );
-
-    if (selectedDestination) {
-      this.updateElement({
-        currentDestinationId: selectedDestination.id,
-      });
-    }
-  };
-
-  _restoreHandlers() {
-    const suffix = 'new';
-
-    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
-
-    this.element.querySelectorAll('.event__type-input').forEach((input) => {
-      input.addEventListener('change', this.#typeChangeHandler);
-    });
-
-    this.element.querySelector(`#event-destination-${suffix}`).addEventListener('change', this.#destinationChangeHandler);
   }
 
   get template() {
@@ -208,5 +180,57 @@ export default class NewPointView extends AbstractStatefulView {
       availableOffers,
       currentType,
     });
+  }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    const point = {
+      ...this._state.point,
+      type: this._state.currentType,
+      destinationId: this._state.currentDestinationId,
+    };
+
+    this.#handleFormSubmit(point);
+  };
+
+  #typeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      currentType: evt.target.value,
+      point: {
+        ...this._state.point,
+        type: evt.target.value,
+      },
+    });
+  };
+
+  #destinationChangeHandler = (evt) => {
+    evt.preventDefault();
+    const selectedDestinationName = evt.target.value;
+    const selectedDestination = this.#destinations.find(
+      (dest) => dest.name === selectedDestinationName,
+    );
+
+    if (selectedDestination) {
+      this.updateElement({
+      currentDestinationId: selectedDestination.id,
+      point: {
+        ...this._state.point,
+        destinationId: selectedDestination.id,
+      },
+      });
+    }
+  };
+
+  _restoreHandlers() {
+    const suffix = 'new';
+
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+
+    this.element.querySelectorAll('.event__type-input').forEach((input) => {
+      input.addEventListener('change', this.#typeChangeHandler);
+    });
+
+    this.element.querySelector(`#event-destination-${suffix}`).addEventListener('change', this.#destinationChangeHandler);
   }
 }
