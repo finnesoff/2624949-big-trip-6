@@ -213,11 +213,11 @@ export default class NewPointView extends AbstractStatefulView {
 
     if (selectedDestination) {
       this.updateElement({
-      currentDestinationId: selectedDestination.id,
-      point: {
-        ...this._state.point,
-        destinationId: selectedDestination.id,
-      },
+        currentDestinationId: selectedDestination.id,
+        point: {
+          ...this._state.point,
+          destinationId: selectedDestination.id,
+        },
       });
     }
   };
