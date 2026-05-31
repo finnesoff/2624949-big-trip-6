@@ -2,6 +2,10 @@ import { render, replace, remove, RenderPosition } from '../framework/render.js'
 import TripInfoView from '../view/trip-info-view.js';
 import dayjs from 'dayjs';
 
+const MAX_ROUTE_ITEMS = 3;
+const DATE_FORMAT_DAY = 'D';
+const DATE_FORMAT_DAY_MONTH = 'D MMM';
+
 export default class TripInfoPresenter {
   #tripInfoContainer = null;
   #pointsModel = null;
@@ -57,7 +61,7 @@ export default class TripInfoPresenter {
       return '';
     }
 
-    if (tripRoute.length > 3) {
+    if (tripRoute.length > MAX_ROUTE_ITEMS) {
       return `${tripRoute[0]} &mdash; ... &mdash; ${tripRoute[tripRoute.length - 1]}`;
     }
 
@@ -74,10 +78,10 @@ export default class TripInfoPresenter {
     const endDate = dayjs(points[points.length - 1].dateTo);
 
     if (startDate.isSame(endDate, 'month')) {
-      return `${startDate.format('D')}&nbsp;&mdash;&nbsp;${endDate.format('D MMM')}`;
+      return `${startDate.format(DATE_FORMAT_DAY)}&nbsp;&mdash;&nbsp;${endDate.format(DATE_FORMAT_DAY_MONTH)}`;
     }
 
-    return `${startDate.format('D MMM')}&nbsp;&mdash;&nbsp;${endDate.format('D MMM')}`;
+    return `${startDate.format(DATE_FORMAT_DAY_MONTH)}&nbsp;&mdash;&nbsp;${endDate.format(DATE_FORMAT_DAY_MONTH)}`;
   }
 
   #calculatePrice() {

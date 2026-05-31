@@ -2,6 +2,7 @@ import {render, replace, remove} from '../framework/render.js';
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import { UserAction, UpdateType } from '../const.js';
+import { isEscKey } from '../utils/common.js';
 
 export default class PointPresenter {
   #point = null;
@@ -189,7 +190,7 @@ export default class PointPresenter {
   };
 
   #escKeyDownHandler = (evt) => {
-    if (evt.key !== 'Escape') {
+    if (!isEscKey(evt)) {
       return;
     }
 

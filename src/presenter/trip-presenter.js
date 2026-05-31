@@ -9,7 +9,7 @@ import NewPointPresenter from './new-point-presenter.js';
 import TripInfoView from '../view/trip-info-view.js';
 import { filter } from '../utils/filter.js';
 import { sortPointDay, sortPointTime, sortPointPrice } from '../utils/sort.js';
-import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
+import { SortType, UpdateType, UserAction } from '../const.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 const TimeLimit = {
@@ -60,16 +60,18 @@ export default class TripPresenter {
     const points = this.#pointsModel.points;
     const filteredPoints = filter[filterType](points);
 
+    const pointsCopy = Array.isArray(filteredPoints) ? [...filteredPoints] : [];
+
     switch (this.#currentSortType) {
       case SortType.DAY:
-        return filteredPoints.sort(sortPointDay);
+        return pointsCopy.sort(sortPointDay);
       case SortType.TIME:
-        return filteredPoints.sort(sortPointTime);
+        return pointsCopy.sort(sortPointTime);
       case SortType.PRICE:
-        return filteredPoints.sort(sortPointPrice);
+        return pointsCopy.sort(sortPointPrice);
     }
 
-    return filteredPoints;
+    return pointsCopy;
   }
 
   get destinations() {
@@ -85,16 +87,15 @@ export default class TripPresenter {
   }
 
   createPoint() {
-    this.#currentSortType = SortType.DAY;
-    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    // If there are no points currently rendered, replace the empty message with the list and sort
     const points = this.points;
     if (points.length === 0) {
       if (this.#listEmptyComponent) {
         remove(this.#listEmptyComponent);
         this.#listEmptyComponent = null;
       }
-      this.#renderSort();
+      if (!this.#isError) {
+        this.#renderSort();
+      }
       render(this.#listComponent, this.#tripEventsContainer);
     }
 
@@ -240,7 +241,6 @@ export default class TripPresenter {
       this.#tripInfoComponent = null;
     }
 
-    // Use raw model points (unfiltered) so trip info doesn't change with filters/sorting
     this.#tripInfoComponent = new TripInfoView({
       points: this.#pointsModel.points,
       destinations: this.destinations,

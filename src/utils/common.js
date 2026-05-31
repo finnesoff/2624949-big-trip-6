@@ -3,3 +3,4 @@ export const escapeHTML = (text) => {
   div.textContent = text;
   return div.innerHTML;
 };
+export const isEscKey = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
