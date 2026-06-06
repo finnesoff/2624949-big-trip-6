@@ -22,8 +22,10 @@ const SortType = {
   EVENT: 'event',
   TIME: 'time',
   PRICE: 'price',
-  OFFERS: 'offers',
+  OFFER: 'offer',
 };
+
+const DEFAULT_SORT_TYPE = SortType.DAY;
 
 const UserAction = {
   UPDATE_POINT: 'UPDATE_POINT',
@@ -39,4 +41,4 @@ const UpdateType = {
   ERROR: 'ERROR',
 };
 
-export { EVENT_TYPES, FilterType, SortType, UserAction, UpdateType };
+export { EVENT_TYPES, FilterType, SortType, UserAction, UpdateType, DEFAULT_SORT_TYPE };

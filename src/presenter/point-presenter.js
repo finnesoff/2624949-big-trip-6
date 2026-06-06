@@ -39,20 +39,18 @@ export default class PointPresenter {
     this.#handleModeChange = onModeChange;
   }
 
-  init() {
-    this.#pointComponent = this.#createPointComponent();
-    this.#pointEditComponent = this.#createEditPointComponent();
-
-    render(this.#pointComponent, this.#listContainer);
-  }
-
-  updatePoint(updatedPoint) {
+  init(point = this.#point) {
     const previousPointComponent = this.#pointComponent;
     const previousPointEditComponent = this.#pointEditComponent;
 
-    this.#point = updatedPoint;
+    this.#point = point;
     this.#pointComponent = this.#createPointComponent();
     this.#pointEditComponent = this.#createEditPointComponent();
+
+    if (previousPointComponent === null || previousPointEditComponent === null) {
+      render(this.#pointComponent, this.#listContainer);
+      return;
+    }
 
     if (this.#isEditing) {
       replace(this.#pointEditComponent, previousPointEditComponent);
@@ -62,6 +60,10 @@ export default class PointPresenter {
 
     remove(previousPointComponent);
     remove(previousPointEditComponent);
+  }
+
+  updatePoint(updatedPoint) {
+    this.init(updatedPoint);
   }
 
   destroy() {
@@ -89,19 +91,25 @@ export default class PointPresenter {
 
   setAborting() {
     if (!this.#isEditing) {
-      this.#pointComponent.shake();
+      if (this.#pointComponent) {
+        this.#pointComponent.shake();
+      }
       return;
     }
 
     const resetFormState = () => {
-      this.#pointEditComponent.updateElement({
-        isDisabled: false,
-        isSaving: false,
-        isDeleting: false,
-      });
+      if (this.#pointEditComponent) {
+        this.#pointEditComponent.updateElement({
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false,
+        });
+      }
     };
 
-    this.#pointEditComponent.shake(resetFormState);
+    if (this.#pointEditComponent) {
+      this.#pointEditComponent.shake(resetFormState);
+    }
   }
 
   resetView() {
@@ -181,12 +189,16 @@ export default class PointPresenter {
     this.resetView();
   };
 
-  #favoriteClickHandler = (updatedPoint) => {
-    this.#handleDataChange(
-      UserAction.UPDATE_POINT,
-      UpdateType.PATCH,
-      updatedPoint,
-    );
+  #favoriteClickHandler = async (updatedPoint) => {
+    try {
+      await this.#handleDataChange(
+        UserAction.UPDATE_POINT,
+        UpdateType.PATCH,
+        updatedPoint,
+      );
+    } catch (err) {
+      this.#pointComponent.shake();
+    }
   };
 
   #escKeyDownHandler = (evt) => {

@@ -1,14 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { SortType } from '../const.js';
 
-const SortType = {
-  DAY: 'day',
-  EVENT: 'event',
-  TIME: 'time',
-  PRICE: 'price',
-  OFFER: 'offer'
-};
-
 function createSortItemTemplate(sortType, isChecked, isDisabled) {
   return (
     `<div class="trip-sort__item  trip-sort__item--${sortType}">
@@ -27,29 +19,31 @@ function createSortItemTemplate(sortType, isChecked, isDisabled) {
   );
 }
 
-function createSortTemplate() {
+function createSortTemplate(currentSortType) {
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-      ${createSortItemTemplate(SortType.DAY, true, false)}
-      ${createSortItemTemplate(SortType.EVENT, false, true)}
-      ${createSortItemTemplate(SortType.TIME, false, false)}
-      ${createSortItemTemplate(SortType.PRICE, false, false)}
-      ${createSortItemTemplate(SortType.OFFER, false, true)}
+      ${createSortItemTemplate(SortType.DAY, currentSortType === SortType.DAY, false)}
+      ${createSortItemTemplate(SortType.EVENT, currentSortType === SortType.EVENT, true)}
+      ${createSortItemTemplate(SortType.TIME, currentSortType === SortType.TIME, false)}
+      ${createSortItemTemplate(SortType.PRICE, currentSortType === SortType.PRICE, false)}
+      ${createSortItemTemplate(SortType.OFFER, currentSortType === SortType.OFFER, true)}
     </form>`
   );
 }
 
 export default class SortView extends AbstractView {
   #onSortTypeChange = null;
+  #currentSortType = null;
 
-  constructor({ onSortTypeChange }) {
+  constructor({ onSortTypeChange, currentSortType }) {
     super();
     this.#onSortTypeChange = onSortTypeChange;
+    this.#currentSortType = currentSortType;
     this.element.addEventListener('change', this.#handleSortTypeChange);
   }
 
   get template() {
-    return createSortTemplate();
+    return createSortTemplate(this.#currentSortType);
   }
 
   #handleSortTypeChange = (evt) => {
@@ -58,4 +52,3 @@ export default class SortView extends AbstractView {
   };
 }
 
-export { SortType };

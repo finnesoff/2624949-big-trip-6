@@ -12,20 +12,18 @@ const createTitle = (points, destinationsById) => {
     return '';
   }
 
-  const sorted = [...points].sort((a, b) => a.dateFrom - b.dateFrom);
+  const sorted = [...points].sort((a, b) => new Date(a.dateFrom) - new Date(b.dateFrom));
   const names = sorted.map((p) => destinationsById.get(p.destinationId)?.name || '').filter(Boolean);
-  const unique = names.filter((v, i, arr) => arr.indexOf(v) === i);
-  const safeNames = unique.map((name) => escapeHTML(name));
 
-  if (unique.length === 0) {
+  if (names.length === 0) {
     return '';
   }
 
-  if (safeNames.length <= MAX_ROUTE_NAMES) {
-    return safeNames.join(' &mdash; ');
+  if (names.length <= MAX_ROUTE_NAMES) {
+    return names.map((name) => escapeHTML(name)).join(' &mdash; ');
   }
 
-  return `${safeNames[0]} &mdash; ... &mdash; ${safeNames[safeNames.length - 1]}`;
+  return `${escapeHTML(names[0])} &mdash; ... &mdash; ${escapeHTML(names[names.length - 1])}`;
 };
 
 const createDates = (points) => {

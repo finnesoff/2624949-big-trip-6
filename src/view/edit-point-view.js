@@ -77,7 +77,7 @@ const createEditPointTemplate = ({
   isDeleting,
 }) => {
   const safePoint = {
-    id: point?.id ?? 'new',
+    id: point?.id ?? '',
     type: point?.type ?? 'flight',
     destinationName: escapeHTML(destination?.name ?? ''),
     dateFrom: point?.dateFrom ? dayjs(point.dateFrom).format('DD/MM/YY HH:mm') : '',
@@ -86,51 +86,52 @@ const createEditPointTemplate = ({
     offerIds: point?.offerIds ?? [],
   };
 
-  const suffix = safePoint.id;
+  const suffix = isCreating ? '' : `-${safePoint.id}`;
+  const lowercaseSuffix = suffix.toLowerCase();
 
   return `
     <li class="trip-events__item">
-      <form class="event event--edit" action="#" method="post">
+      <form class="event  event--edit" action="#" method="post">
         <header class="event__header">
           <div class="event__type-wrapper">
-            <label class="event__type event__type-btn" for="event-type-toggle-${suffix}">
+            <label class="event__type  event__type-btn" for="event-type-toggle${lowercaseSuffix}">
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${safePoint.type}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle visually-hidden" id="event-type-toggle-${suffix}" type="checkbox" ${isDisabled ? 'disabled' : ''}>
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle${lowercaseSuffix}" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-                ${createTypeItemsTemplate(safePoint.type, suffix, isDisabled)}
+                ${createTypeItemsTemplate(safePoint.type, lowercaseSuffix, isDisabled)}
               </fieldset>
             </div>
           </div>
 
-          <div class="event__field-group event__field-group--destination">
-            <label class="event__label event__type-output" for="event-destination-${suffix}">
+          <div class="event__field-group  event__field-group--destination">
+            <label class="event__label  event__type-output" for="event-destination${lowercaseSuffix}">
               ${safePoint.type}
             </label>
-            <input class="event__input event__input--destination" id="event-destination-${suffix}" type="text" name="event-destination" value="${safePoint.destinationName}" placeholder="Choose destination" list="destination-list-${suffix}" ${isDisabled ? 'disabled' : ''}>
-            <datalist id="destination-list-${suffix}">
+            <input class="event__input  event__input--destination" id="event-destination${lowercaseSuffix}" type="text" name="event-destination" value="${safePoint.destinationName}" placeholder="Choose destination" list="destination-list${lowercaseSuffix}" ${isDisabled ? 'disabled' : ''}>
+            <datalist id="destination-list${lowercaseSuffix}">
               ${createDestinationOptionsTemplate(destinations)}
             </datalist>
           </div>
 
-          <div class="event__field-group event__field-group--time">
-            <label class="visually-hidden" for="event-start-time-${suffix}">From</label>
-            <input class="event__input event__input--time" id="event-start-time-${suffix}" type="text" name="event-start-time" value="${safePoint.dateFrom}" placeholder="Select start date and time" ${isDisabled ? 'disabled' : ''}>
+          <div class="event__field-group  event__field-group--time">
+            <label class="visually-hidden" for="event-start-time${lowercaseSuffix}">From</label>
+            <input class="event__input  event__input--time" id="event-start-time${lowercaseSuffix}" type="text" name="event-start-time" value="${safePoint.dateFrom}" placeholder="Select start date and time" ${isDisabled ? 'disabled' : ''}>
             &mdash;
-            <label class="visually-hidden" for="event-end-time-${suffix}">To</label>
-            <input class="event__input event__input--time" id="event-end-time-${suffix}" type="text" name="event-end-time" value="${safePoint.dateTo}" placeholder="Select end date and time" ${isDisabled ? 'disabled' : ''}>
+            <label class="visually-hidden" for="event-end-time${lowercaseSuffix}">To</label>
+            <input class="event__input  event__input--time" id="event-end-time${lowercaseSuffix}" type="text" name="event-end-time" value="${safePoint.dateTo}" placeholder="Select end date and time" ${isDisabled ? 'disabled' : ''}>
           </div>
 
-          <div class="event__field-group event__field-group--price">
-            <label class="event__label" for="event-price-${suffix}">
+          <div class="event__field-group  event__field-group--price">
+            <label class="event__label" for="event-price${lowercaseSuffix}">
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input event__input--price" id="event-price-${suffix}" type="number" name="event-price" value="${safePoint.basePrice}" placeholder="0" min="1" required ${isDisabled ? 'disabled' : ''}>
+            <input class="event__input  event__input--price" id="event-price${lowercaseSuffix}" type="number" name="event-price" value="${safePoint.basePrice}" placeholder="0" min="1" required ${isDisabled ? 'disabled' : ''}>
           </div>
 
           <button class="event__save-btn btn btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
@@ -145,26 +146,38 @@ const createEditPointTemplate = ({
           `
 }
         </header>
-        ${availableOffers.length > 0 || destination?.description || (destination?.pictures && destination.pictures.length > 0) ? `
+          ${
+  (availableOffers.length > 0) || (destination?.description) || (destination?.pictures && destination.pictures.length > 0)
+    ? `
         <section class="event__details">
-          ${availableOffers.length > 0 ? `
+          ${
+  availableOffers.length > 0
+    ? `
           <section class="event__section event__section--offers">
             <h3 class="event__section-title event__section-title--offers">Offers</h3>
             <div class="event__available-offers">
-              ${createOffersTemplate(availableOffers, safePoint.offerIds, suffix, isDisabled)}
+              ${createOffersTemplate(availableOffers, safePoint.offerIds, lowercaseSuffix, isDisabled)}
             </div>
           </section>
-          ` : ''}
+          `
+    : ''
+}
 
-          ${destination?.description || (destination?.pictures && destination.pictures.length > 0) ? `
+          ${
+  destination?.description || (destination?.pictures && destination.pictures.length > 0)
+    ? `
           <section class="event__section event__section--destination">
             <h3 class="event__section-title event__section-title--destination">Destination</h3>
             <p class="event__destination-description">${escapeHTML(destination?.description ?? '')}</p>
             ${createPhotosTemplate(destination?.pictures ?? [])}
           </section>
-          ` : ''}
+          `
+    : ''
+}
         </section>
-        ` : ''}
+        `
+    : ''
+}
       </form>
     </li>
   `;
@@ -367,9 +380,11 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #setDatepickers() {
-    const suffix = this._state.point?.id ?? 'new';
-    const startInput = this.element.querySelector(`#event-start-time-${suffix}`);
-    const endInput = this.element.querySelector(`#event-end-time-${suffix}`);
+    const isCreating = this._state.point?.id === undefined || this._state.point?.id === null || this._state.point?.id === 'new';
+    const suffix = isCreating ? '' : `-${this._state.point.id}`;
+    const lowercaseSuffix = suffix.toLowerCase();
+    const startInput = this.element.querySelector(`#event-start-time${lowercaseSuffix}`);
+    const endInput = this.element.querySelector(`#event-end-time${lowercaseSuffix}`);
 
     if (this.#datepickerFrom) {
       this.#datepickerFrom.destroy();
@@ -410,7 +425,9 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   _restoreHandlers() {
-    const suffix = this.#point?.id ?? 'new';
+    const isCreating = this.#point === null || this.#point === undefined;
+    const suffix = isCreating ? '' : `-${this.#point.id}`;
+    const lowercaseSuffix = suffix.toLowerCase();
 
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteClickHandler);
@@ -419,8 +436,8 @@ export default class EditPointView extends AbstractStatefulView {
       input.addEventListener('change', this.#typeChangeHandler);
     });
 
-    this.element.querySelector(`#event-destination-${suffix}`).addEventListener('change', this.#destinationChangeHandler);
-    this.element.querySelector(`#event-price-${suffix}`).addEventListener('change', this.#priceChangeHandler);
+    this.element.querySelector(`#event-destination${lowercaseSuffix}`).addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector(`#event-price${lowercaseSuffix}`).addEventListener('change', this.#priceChangeHandler);
 
     this.element.querySelectorAll('.event__offer-checkbox').forEach((input) => {
       input.addEventListener('change', this.#offerChangeHandler);
